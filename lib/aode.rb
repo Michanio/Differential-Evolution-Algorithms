@@ -1,38 +1,13 @@
-require_relative 'optimalization_properties.rb'
+require_relative 'optimalization_properties'
+require_relative 'opposite_numbers'
 
+##
+# == Implementacja algorutmu evolucji różnicowej rozszerzonego o zastosowanie wektorów przeciwnych z samoadaptującym się współczynnikiem JR
 module AODE
   include OptimalizationProperties
-
-  def AODE.opposite(max, min, vector)
-    x = vector.collect{|v| max+min-v}
-    return Vector[*x]
-  end
-
-
-  # return Array with Vector object
-  def AODE.opposite_population(population)
-    values_in_dimension = []
-    dimension = population[0].size
-
-    dimension.times{|i| values_in_dimension[i] = []}
-
-    #Znalezienie MAX i MIN zakresu w każdej przestrzeni
-    population.each do |x|
-      x.each.with_index do |xi, index|
-        values_in_dimension[index] << xi
-      end
-    end
-    dimension.times{ |i| values_in_dimension[i].sort!}
-
-    opposite_population = population.collect do |x|
-      ox_tab = []
-      x.each.with_index{|xi, index| ox_tab[index] = values_in_dimension[index].first + values_in_dimension[index].last - xi}
-      Vector[*ox_tab]
-    end
-  end
-
-
-  # ODE algorithm
+   
+ 
+  # Funkcja uruchamiająca algorytm AODE  
   def AODE.run(&function)
     rand = Random.new()
     results = Array.new
@@ -49,7 +24,7 @@ module AODE
       tab = []
       DIMENSION.times{ tab << rand.rand()*MAX + MIN }
       x << Vector[*tab]
-      ox << ODE::opposite(MAX, MIN, x.last)
+      ox << OppositeNumbers::opposite(MAX, MIN, x.last)
 
       function_calls += 2
     end
@@ -97,10 +72,10 @@ module AODE
 
 
 
-      # Opoosite vectors
+      # Generacja wektorów przeciwnych
       if(rand.rand < jr)
 
-        ox = AODE.opposite_population(x)
+        ox = OppositeNumbers::opposite_population(x)
         x = x + ox
         x.sort_by!{|x| function.call(x)}
         x= x[0..POPULATION_COUNT]
