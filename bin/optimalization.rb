@@ -1,9 +1,10 @@
-require_relative 'optimalization_functions.rb'
-require_relative 'test_functions.rb'
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+require 'optimalization_functions.rb'
+require 'test_functions.rb'
 
 include OptimalizationFunctions
-
-
 
 data_de = differential_evolution {|current| TestFunctions::sphere(current) }
 data_ode = opposite_based_differential_evolution {|current| TestFunctions::sphere(current) }
